@@ -1,3 +1,41 @@
 body {
     font-family: 'Roboto', sans-serif;
 }
+
+.carousel-container {
+    overflow: hidden;
+    max-width: 600px;
+    margin: auto;
+  }
+
+  .carousel-inner-custom {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+  }
+
+  .carousel-item-custom {
+    min-width: 33.3333%; /* 3 elementos por vista */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+  }
+
+  .carousel-item-custom button {
+    width: 100%;
+    max-width: 150px;
+    height: 100px;
+    transition: all 0.3s ease-in-out;
+  }
+
+  .carousel-item-custom.active button {
+    transform: scale(1.2);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+    z-index: 10;
+  }
+
+  .carousel-controls {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+  }
