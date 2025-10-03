@@ -67,7 +67,8 @@ function App() {
         return;
       }
       try {
-        const res = await fetch("/api/validate-token", {
+  const API_URL = import.meta.env.VITE_API_URL || '';
+  const res = await fetch(`${API_URL}/api/validate-token`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (res.ok) {

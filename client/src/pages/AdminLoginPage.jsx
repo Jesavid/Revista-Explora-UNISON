@@ -1,6 +1,7 @@
 // src/pages/AdminLoginPage.jsx
 
 import { useState } from "react";
+const API_URL = import.meta.env.VITE_API_URL || '';
 import { useNavigate } from "react-router-dom";
 
 export default function AdminLoginPage({ onLogin }) {
@@ -13,7 +14,7 @@ export default function AdminLoginPage({ onLogin }) {
     e.preventDefault();
     setError("");
     try {
-      const res = await fetch("/api/login", {
+      const res = await fetch(`${API_URL}/api/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password })

@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
+const API_URL = import.meta.env.VITE_API_URL || '';
 
 // Utilidad para obtener años y números desde el backend
 async function fetchVolumenes() {
-  const res = await fetch('/api/articulos/volumenes');
+  const res = await fetch(`${API_URL}/api/articulos/volumenes`);
   return res.ok ? res.json() : [];
 }
 async function fetchNumeros(idVolumen) {
-  const res = await fetch(`/api/articulos/numeros?volumen=${idVolumen}`);
+  const res = await fetch(`${API_URL}/api/articulos/numeros?volumen=${idVolumen}`);
   return res.ok ? res.json() : [];
 }
 
@@ -66,7 +67,7 @@ export default function AddContentModal({
       let idNumero;
       try {
         const token = localStorage.getItem('token');
-  const res = await fetch('/api/articulos/resolve-numero', {
+  const res = await fetch(`${API_URL}/api/articulos/resolve-numero`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -105,7 +106,7 @@ export default function AddContentModal({
     });
       try {
         const token = localStorage.getItem('token');
-        await fetch('/api/articulos/upload', {
+  await fetch(`${API_URL}/api/articulos/upload`, {
           method: 'POST',
           headers: token ? { 'Authorization': `Bearer ${token}` } : {},
           body: fd
@@ -149,7 +150,7 @@ export default function AddContentModal({
       try {
         const token = localStorage.getItem('token');
         const idUsuario = localStorage.getItem('idusuario');
-        await fetch('/api/videos', {
+  await fetch(`${API_URL}/api/videos`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -193,7 +194,7 @@ export default function AddContentModal({
       });
       try {
         const token = localStorage.getItem('token');
-        await fetch('/api/noticias/upload', {
+  await fetch(`${API_URL}/api/noticias/upload`, {
           method: 'POST',
           headers: token ? { 'Authorization': `Bearer ${token}` } : {},
           body: fd
@@ -231,7 +232,7 @@ export default function AddContentModal({
       });
       try {
         const token = localStorage.getItem('token');
-        await fetch(`/api/articulos/${formData.id}`, {
+  await fetch(`${API_URL}/api/articulos/${formData.id}`, {
           method: 'PUT',
           headers: token ? { 'Authorization': `Bearer ${token}` } : {},
           body: fd
