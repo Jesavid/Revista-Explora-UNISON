@@ -1,19 +1,42 @@
 // Log global de errores fatales
 process.on('uncaughtException', err => {
     console.error('Uncaught Exception:', err);
+    console.error('Stack:', err.stack);
+    process.exit(1);
 });
 process.on('unhandledRejection', err => {
     console.error('Unhandled Rejection:', err);
+    console.error('Stack:', err.stack);
+    process.exit(1);
 });
-// ...existing code...
+
+process.on('SIGTERM', () => {
+    console.log('Received SIGTERM signal');
+    process.exit(0);
+});
+
+process.on('SIGINT', () => {
+    console.log('Received SIGINT signal');
+    process.exit(0);
+});
+
+console.log('Process handlers registered');
+console.log('Loading modules...');
 const express = require('express');
+console.log('✓ Express loaded');
 const path = require('path');
+console.log('✓ Path loaded');
 const cors = require('cors');
+console.log('✓ CORS loaded');
 const jwt = require('jsonwebtoken');
+console.log('✓ JWT loaded');
 const validarToken = require('./middlewares/validarToken');
+console.log('✓ ValidarToken loaded');
 
 const app = express();
+console.log('✓ Express app created');
 const SECRET_KEY = process.env.SECRET_KEY || 'secret';
+console.log('✓ Secret key configured');
 
 
 // CORS restringido al dominio de Vercel en producción
@@ -130,4 +153,7 @@ app.listen(PORT, '0.0.0.0', () => {
     console.log('- /api/noticias'); 
     console.log('- /api/videos');
     console.log('- /api/usuarios');
+    console.log('✓ Server is listening and ready to accept connections');
 });
+
+console.log('✓ Script execution completed - waiting for connections');
