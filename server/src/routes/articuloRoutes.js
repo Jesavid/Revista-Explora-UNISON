@@ -4,8 +4,18 @@ const router = express.Router();
 const articuloController = require('../controllers/articuloController');
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
 const Volumen = require('../models/volumen');
 const Numero = require('../models/numero');
+
+// Crear directorio files si no existe
+const filesDir = path.join(__dirname, '../files');
+if (!fs.existsSync(filesDir)) {
+	console.log('[SETUP] Creando directorio files:', filesDir);
+	fs.mkdirSync(filesDir, { recursive: true });
+} else {
+	console.log('[SETUP] Directorio files ya existe:', filesDir);
+}
 
 // Obtener todos los volúmenes (años)
 router.get('/volumenes', async (req, res) => {
@@ -44,9 +54,9 @@ router.post('/resolve-numero', async (req, res) => {
 
 const storage = multer.diskStorage({
 	destination: function (req, file, cb) {
-		const filePath = path.join(__dirname, '../files');
-		console.log('[MULTER] Guardando archivo en:', filePath);
-		cb(null, filePath);
+		// Usar el directorio que creamos arriba
+		console.log('[MULTER] Guardando archivo en:', filesDir);
+		cb(null, filesDir);
 	},
 	filename: function (req, file, cb) {
 		const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);

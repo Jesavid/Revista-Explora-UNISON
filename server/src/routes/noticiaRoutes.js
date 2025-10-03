@@ -5,15 +5,29 @@ const noticiaController = require('../controllers/noticiaController');
 router.get('/portada/:id', noticiaController.portada);
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
+
+// Crear directorio files si no existe
+const filesDir = path.join(__dirname, '../files');
+if (!fs.existsSync(filesDir)) {
+	console.log('[NOTICIAS SETUP] Creando directorio files:', filesDir);
+	fs.mkdirSync(filesDir, { recursive: true });
+} else {
+	console.log('[NOTICIAS SETUP] Directorio files ya existe:', filesDir);
+}
+
 const storage = multer.diskStorage({
 	destination: function (req, file, cb) {
-		cb(null, path.join(__dirname, '../files'));
+		console.log('[NOTICIAS MULTER] Guardando archivo en:', filesDir);
+		cb(null, filesDir);
 	},
 	filename: function (req, file, cb) {
 		// nomenclatura: foto-[titulo de la noticia]
 		const ext = path.extname(file.originalname);
 		const nombre = req.body.titulo ? req.body.titulo.replace(/\s+/g, '_') : 'noticia';
-		cb(null, `foto-${nombre}${ext}`);
+		const filename = `foto-${nombre}${ext}`;
+		console.log('[NOTICIAS MULTER] Nombre de archivo:', filename);
+		cb(null, filename);
 	}
 });
 const upload = multer({ storage });
