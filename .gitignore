@@ -1,0 +1,32 @@
+# Node.js
+node_modules/
+dist/
+.env
+.env.*
+*.log
+coverage/
+
+# Vite
+client/.vite/
+client/dist/
+
+# VSCode
+.vscode/
+
+# Sistema operativo
+Thumbs.db
+.DS_Store
+
+# Archivos temporales
+*.tmp
+*.swp
+*.swo
+
+# Archivos de backend
+server/node_modules/
+server/dist/
+server/.env
+server/.env.*
+server/coverage/
+server/*.log
+server/src/files/
