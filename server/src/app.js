@@ -140,11 +140,11 @@ app.use((req, res) => {
     res.status(404).json({ error: 'Ruta no encontrada' });
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000;
 console.log('Starting server with PORT:', PORT);
 console.log('NODE_ENV:', process.env.NODE_ENV);
 console.log('process.env.PORT value:', process.env.PORT);
-console.log('Railway should assign PORT automatically...');
+console.log('Forcing PORT to match Railway public networking...');
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`✓ Server listening on 0.0.0.0:${PORT}`);
     console.log('✓ Ready to accept HTTP connections');
