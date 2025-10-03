@@ -83,8 +83,10 @@ app.use((req, res) => {
 const PORT = process.env.PORT || 8080;
 console.log('Starting server with PORT:', PORT);
 console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('process.env.PORT value:', process.env.PORT);
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server corriendo en http://0.0.0.0:${PORT}`);
+    console.log('Puerto real usado:', PORT);
     console.log('Rutas disponibles:');
     console.log('- GET /health');
     console.log('- /api/articulos');
