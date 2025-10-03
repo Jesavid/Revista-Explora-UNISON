@@ -15,7 +15,12 @@ const validarToken = require('./middlewares/validarToken');
 const app = express();
 const SECRET_KEY = process.env.SECRET_KEY || 'secret';
 
-app.use(cors());
+// Configuración CORS para producción y desarrollo
+app.use(cors({
+    origin: process.env.NODE_ENV === 'production'
+        ? 'https://revista-explora-unison.vercel.app'
+        : '*'
+}));
 app.use(express.json());
 
 // Rutas API
