@@ -14,10 +14,12 @@ const Noticia = {
     // foto es el nombre del archivo guardado
     // Guardar fecha solo como YYYY-MM-DD
     const fecha = fechaNoticia ? fechaNoticia.substring(0, 10) : null;
+    console.log('[NOTICIA MODEL] Insertando noticia con fecha:', fecha, 'original:', fechaNoticia);
     const result = await pool.query(
       'INSERT INTO noticia (idusuario, autor, titulo, resumen, foto, contenido, fechanoticia) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
       [idUsuario, autor, titulo, resumen, foto, contenido, fecha]
     );
+    console.log('[NOTICIA MODEL] Resultado INSERT:', result.rows[0]);
     return result.rows[0];
   },
   async findById(idNoticia) {

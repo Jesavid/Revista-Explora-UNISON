@@ -81,15 +81,28 @@ export default function AddContentModal({
         alert('Error resolviendo año/número');
         return;
       }
-      // Subir artículo
-      const fd = new FormData();
-  fd.append('titulo', formData.title);
-  fd.append('autor', formData.autor);
-  fd.append('idusuario', localStorage.getItem('idusuario') || '');
-  fd.append('idnumero', idNumero);
-  fd.append('resumen', formData.abstract);
-  fd.append('nopaginas', formData.pages);
-  fd.append('documento', formData.pdfFile);
+    // Subir artículo
+    const fd = new FormData();
+    const fechaEnviar = formData.date ? formData.date.substring(0, 10) : '';
+    fd.append('titulo', formData.title);
+    fd.append('autor', formData.autor);
+    fd.append('idusuario', localStorage.getItem('idusuario') || '');
+    fd.append('idnumero', idNumero);
+    fd.append('resumen', formData.abstract);
+    fd.append('nopaginas', formData.pages);
+    fd.append('fecha', fechaEnviar);
+    fd.append('documento', formData.pdfFile);
+    // DEBUG: Mostrar datos enviados
+    console.log('[ARTICULO MODAL] Enviando:', {
+      titulo: formData.title,
+      autor: formData.autor,
+      idusuario: localStorage.getItem('idusuario') || '',
+      idnumero: idNumero,
+      resumen: formData.abstract,
+      nopaginas: formData.pages,
+      fecha: fechaEnviar,
+      documento: formData.pdfFile
+    });
       try {
         const token = localStorage.getItem('token');
         await fetch('/api/articulos/upload', {
@@ -158,15 +171,26 @@ export default function AddContentModal({
     if (type === 'Noticia') {
       // Usar FormData para noticia (agregar o editar)
       const fd = new FormData();
+      const fechaNoticiaEnviar = formData.date ? formData.date.substring(0, 10) : '';
       fd.append('titulo', formData.title);
       fd.append('autor', formData.autor);
       fd.append('resumen', formData.description);
       fd.append('contenido', formData.content);
-      fd.append('fechaNoticia', formData.date ? formData.date.substring(0, 10) : '');
+      fd.append('fechaNoticia', fechaNoticiaEnviar);
       fd.append('idUsuario', localStorage.getItem('idusuario') || '');
       if (formData.imageFile) {
         fd.append('foto', formData.imageFile);
       }
+      // DEBUG: Mostrar datos enviados
+      console.log('[NOTICIA MODAL] Enviando:', {
+        titulo: formData.title,
+        autor: formData.autor,
+        resumen: formData.description,
+        contenido: formData.content,
+        fechaNoticia: fechaNoticiaEnviar,
+        idUsuario: localStorage.getItem('idusuario') || '',
+        foto: formData.imageFile
+      });
       try {
         const token = localStorage.getItem('token');
         await fetch('/api/noticias/upload', {
@@ -178,12 +202,49 @@ export default function AddContentModal({
         alert('Error al subir la noticia');
       }
       // Esperar a que el padre recargue el contenido antes de cerrar
-      if (addContent) await addContent({}, type);
+      if (addContent) await addContent({ ...formData, date: formData.date ? formData.date.substring(0, 10) : '' }, type);
+      onClose();
+      return;
+    }
+    if (isEditing && type === 'Artículo') {
+      // Editar artículo (PUT)
+      const fd = new FormData();
+      const fechaEnviar = formData.date ? formData.date.substring(0, 10) : '';
+      fd.append('titulo', formData.title);
+      fd.append('autor', formData.autor);
+      fd.append('idusuario', formData.idusuario || localStorage.getItem('idusuario') || '');
+      fd.append('idnumero', formData.idnumero);
+      fd.append('resumen', formData.abstract);
+      fd.append('nopaginas', formData.pages);
+      fd.append('fecha', fechaEnviar);
+      if (formData.pdfFile) fd.append('documento', formData.pdfFile);
+      // DEBUG: Mostrar datos enviados
+      console.log('[ARTICULO MODAL][EDIT] Enviando:', {
+        titulo: formData.title,
+        autor: formData.autor,
+        idusuario: formData.idusuario || localStorage.getItem('idusuario') || '',
+        idnumero: formData.idnumero,
+        resumen: formData.abstract,
+        nopaginas: formData.pages,
+        fecha: fechaEnviar,
+        documento: formData.pdfFile
+      });
+      try {
+        const token = localStorage.getItem('token');
+        await fetch(`/api/articulos/${formData.id}`, {
+          method: 'PUT',
+          headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+          body: fd
+        });
+      } catch (err) {
+        alert('Error al editar el artículo');
+      }
+      if (updateContent) await updateContent({ ...formData, date: fechaEnviar }, type);
       onClose();
       return;
     }
     if (isEditing) {
-      if (updateContent) await updateContent(formData, type);
+      if (updateContent) await updateContent({ ...formData, date: formData.date ? formData.date.substring(0, 10) : '' }, type);
     } else {
       if (addContent) await addContent(formData, type);
     }

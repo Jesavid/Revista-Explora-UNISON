@@ -10,9 +10,12 @@ function ArticleCard({ id, title, author, date, abstract }) {
     <Link to={`/article/${id}`}>
       <div className="bg-white p-6 h-full rounded-lg shadow-md transition-all duration-300 hover:shadow-xl hover:scale-105 cursor-pointer flex flex-col">
         <h3 className="text-xl font-bold mb-2 text-gray-800">{title}</h3>
-        <div className="text-sm text-gray-500 mb-4">
+        <div className="text-sm text-gray-500 mb-2">
           <span>Por: <strong>{author}</strong></span>
         </div>
+        {date && (
+          <div className="text-xs text-gray-400 mb-2">Publicado: {date}</div>
+        )}
         <p className="text-gray-600 flex-grow">{shortAbstract}</p>
         <span className="text-blue-600 font-semibold mt-4 self-start">
           Leer más &rarr;
@@ -54,6 +57,7 @@ export default function Articles({ search }) {
                   id={article.id}
                   title={article.title}
                   author={article.autor}
+                  date={article.date}
                   abstract={article.resumen}
                 />
               ))}

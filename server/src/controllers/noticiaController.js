@@ -15,8 +15,9 @@
           const fs = require('fs');
           foto = fs.readFileSync(req.file.path);
         }
-        console.log('POST /api/noticias/upload', { idUsuario, autor, titulo, resumen, contenido, fechaNoticia, foto: foto ? `<buffer length ${foto.length}>` : null });
+        console.log('[NOTICIA UPLOAD] Recibido:', { idUsuario, autor, titulo, resumen, contenido, fechaNoticia, foto: foto ? `<buffer length ${foto.length}>` : null });
         const noticia = await Noticia.create({ idUsuario, autor, titulo, resumen, foto, contenido, fechaNoticia });
+        console.log('[NOTICIA UPLOAD] Guardado en BD:', noticia);
         res.status(201).json(noticia);
       } catch (err) {
         console.error('ERROR /api/noticias/upload:', err);

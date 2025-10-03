@@ -13,6 +13,13 @@ export const contentService = {
       newsRes.ok ? newsRes.json() : [],
     ]);
     // Mapear artículos a la estructura esperada por el frontend
+    // Utilidad para formatear fecha a dd/mm/yyyy
+    const formatDate = (iso) => {
+      if (!iso) return '';
+      const d = new Date(iso);
+      if (isNaN(d)) return '';
+      return d.toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    };
     const articles = rawArticles.map(a => ({
       id: a.idarticulo,
       title: a.titulo,
@@ -21,6 +28,7 @@ export const contentService = {
       nopaginas: a.nopaginas,
       idnumero: a.idnumero,
       idusuario: a.idusuario,
+      date: formatDate(a.fecha),
       pdfUrl: a.idarticulo ? `/api/articulos/file/articulo-${a.idarticulo}.pdf` : null,
     }));
     // Mapear videos a la estructura esperada por el frontend
@@ -33,13 +41,13 @@ export const contentService = {
     }));
     // Mapear noticias a la estructura esperada por el frontend
     const news = rawNews.map(n => ({
-  id: n.idnoticia,
-  title: n.titulo,
-  description: n.resumen,
-  date: n.fechanoticia,
-  imageUrl: n.foto ? `/api/noticias/portada/${n.idnoticia}` : null,
-  author: n.autor || n.idusuario,
-  content: n.contenido
+      id: n.idnoticia,
+      title: n.titulo,
+      description: n.resumen,
+      date: formatDate(n.fechanoticia),
+      imageUrl: n.foto ? `/api/noticias/portada/${n.idnoticia}` : null,
+      author: n.autor || n.idusuario,
+      content: n.contenido
     }));
     return {
       articles,

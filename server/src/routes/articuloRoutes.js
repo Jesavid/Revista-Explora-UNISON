@@ -55,6 +55,8 @@ const upload = multer({ storage });
 
 // Subir PDF de artículo
 router.post('/upload', upload.single('documento'), articuloController.upload);
+// Actualizar artículo (incluye PDF opcional)
+router.put('/:id', upload.single('documento'), articuloController.update);
 // Descargar PDF
 router.get('/file/:filename', articuloController.download);
 
