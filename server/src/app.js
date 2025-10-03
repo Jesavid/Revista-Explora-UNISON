@@ -26,9 +26,9 @@ app.use(cors({
 }));
 app.use(express.json());
 
+
 // Rutas API
 app.use('/api/usuarios', require('./routes/usuarioRoutes'));
-
 app.use('/api/articulos', require('./routes/articuloRoutes'));
 app.use('/api/noticias', require('./routes/noticiaRoutes'));
 app.use('/api/videos', require('./routes/videoRoutes'));
@@ -56,11 +56,19 @@ app.get('/admin', validarToken, (req, res) => {
     res.json({ message: 'Bienvenido al panel de admin', user: req.user });
 });
 
-
 // Endpoint para validar token JWT (debe ir antes de servir el frontend)
 app.get('/api/validate-token', validarToken, (req, res) => {
     res.status(200).json({ valid: true, user: req.user });
 });
+
+// Middleware de CORS global para errores y rutas no encontradas
+app.use(cors({
+    origin: process.env.NODE_ENV === 'production'
+        ? 'https://revista-explora-unison.vercel.app'
+        : '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 // Servir frontend compilado
 app.use(express.static(path.join(__dirname, '../client/build')));
