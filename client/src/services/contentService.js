@@ -7,13 +7,25 @@ export const contentService = {
       fetch(`${API_URL}/api/videos`),
       fetch(`${API_URL}/api/noticias`)
     ]);
+    // Manejo de errores: si la respuesta no es JSON válida, devolver array vacío y mostrar advertencia
+    async function safeJson(res, tipo) {
+      if (!res.ok) {
+        console.warn(`[contentService] Error en respuesta de ${tipo}:`, res.status, res.statusText);
+        return [];
+      }
+      try {
+        return await res.json();
+      } catch (e) {
+        console.warn(`[contentService] Respuesta no es JSON válido para ${tipo}. Probable error de backend o URL:`, e);
+        return [];
+      }
+    }
     const [rawArticles, rawVideos, rawNews] = await Promise.all([
-      articlesRes.ok ? articlesRes.json() : [],
-      videosRes.ok ? videosRes.json() : [],
-      newsRes.ok ? newsRes.json() : [],
+      safeJson(articlesRes, 'articulos'),
+      safeJson(videosRes, 'videos'),
+      safeJson(newsRes, 'noticias'),
     ]);
     // Mapear artículos a la estructura esperada por el frontend
-    // Utilidad para formatear fecha a dd/mm/yyyy
     const formatDate = (iso) => {
       if (!iso) return '';
       const d = new Date(iso);
@@ -33,11 +45,11 @@ export const contentService = {
     }));
     // Mapear videos a la estructura esperada por el frontend
     const videos = rawVideos.map(v => ({
-  id: v.idvideo,
-  title: v.titulo,
-  description: v.resumen,
-  videoId: v.ruta,
-  ruta: v.ruta
+      id: v.idvideo,
+      title: v.titulo,
+      description: v.resumen,
+      videoId: v.ruta,
+      ruta: v.ruta
     }));
     // Mapear noticias a la estructura esperada por el frontend
     const news = rawNews.map(n => ({
