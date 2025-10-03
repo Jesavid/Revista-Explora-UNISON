@@ -28,7 +28,8 @@ export default function ArticlePage() {
     <div className="bg-white min-h-screen">
       <main className="container mx-auto p-4 md:p-8 max-w-4xl">
         <div className="bg-white p-8 rounded-lg">
-          <Link to="/articles" className="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 mb-6 inline-block">
+          <Link to="/articles" className="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-70          const PORT = process.env.PORT || 8080;
+          app.listen(PORT, () => console.log(`Server corriendo en http://localhost:${PORT}`));0 mb-6 inline-block">
             &larr; Todos los artículos
           </Link>
 

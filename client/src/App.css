@@ -2,7 +2,7 @@
 @import "tailwindcss/preflight";
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 
-@theme{
+:root {
   --font-roboto: 'Roboto', sans-serif;
   --color-textprimary: #000000;
   --color-textsecondary: #FFFFFF;
