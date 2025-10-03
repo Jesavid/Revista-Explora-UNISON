@@ -1,11 +1,11 @@
-
+const API_URL = import.meta.env.VITE_API_URL || '';
 export const contentService = {
   getAllContent: async () => {
     // Obtener artículos, videos y noticias reales del backend
     const [articlesRes, videosRes, newsRes] = await Promise.all([
-      fetch('/api/articulos'),
-      fetch('/api/videos'),
-      fetch('/api/noticias')
+      fetch(`${API_URL}/api/articulos`),
+      fetch(`${API_URL}/api/videos`),
+      fetch(`${API_URL}/api/noticias`)
     ]);
     const [rawArticles, rawVideos, rawNews] = await Promise.all([
       articlesRes.ok ? articlesRes.json() : [],
@@ -29,7 +29,7 @@ export const contentService = {
       idnumero: a.idnumero,
       idusuario: a.idusuario,
       date: formatDate(a.fecha),
-      pdfUrl: a.idarticulo ? `/api/articulos/file/articulo-${a.idarticulo}.pdf` : null,
+      pdfUrl: a.idarticulo ? `${API_URL}/api/articulos/file/articulo-${a.idarticulo}.pdf` : null,
     }));
     // Mapear videos a la estructura esperada por el frontend
     const videos = rawVideos.map(v => ({
@@ -45,7 +45,7 @@ export const contentService = {
       title: n.titulo,
       description: n.resumen,
       date: formatDate(n.fechanoticia),
-      imageUrl: n.foto ? `/api/noticias/portada/${n.idnoticia}` : null,
+      imageUrl: n.foto ? `${API_URL}/api/noticias/portada/${n.idnoticia}` : null,
       author: n.autor || n.idusuario,
       content: n.contenido
     }));

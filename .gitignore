@@ -9,6 +9,7 @@ coverage/
 # Vite
 client/.vite/
 client/dist/
+client/node_modules
 
 # VSCode
 .vscode/
