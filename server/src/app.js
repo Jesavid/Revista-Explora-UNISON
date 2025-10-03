@@ -16,15 +16,8 @@ const app = express();
 const SECRET_KEY = process.env.SECRET_KEY || 'secret';
 
 
-// Configuración CORS para producción y desarrollo (debe ir antes de cualquier ruta)
-app.use(cors({
-    origin: process.env.NODE_ENV === 'production'
-        ? 'https://revista-explora-unison.vercel.app'
-        : '*',
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-}));
-// Handler explícito para preflight OPTIONS
+// CORS abierto para pruebas
+app.use(cors());
 app.options('*', cors());
 app.use(express.json());
 
