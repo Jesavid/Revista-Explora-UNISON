@@ -6,32 +6,91 @@ const articuloController = {
   // Subida de PDF
   async upload(req, res) {
     try {
+      console.log('[ARTICULO UPLOAD] === INICIANDO UPLOAD ===');
+      console.log('[ARTICULO UPLOAD] req.file:', req.file);
+      console.log('[ARTICULO UPLOAD] req.body:', req.body);
+      
       let { autor, idusuario, idnumero, titulo, resumen, nopaginas, fecha } = req.body;
+      
       // Convertir a entero o null
       idusuario = idusuario && !isNaN(idusuario) ? parseInt(idusuario, 10) : null;
       idnumero = idnumero && !isNaN(idnumero) ? parseInt(idnumero, 10) : null;
       nopaginas = nopaginas && !isNaN(nopaginas) ? parseInt(nopaginas, 10) : null;
-      // Leer el buffer del archivo PDF
-      const documento = req.file && req.file.path ? fs.readFileSync(req.file.path) : null;
-      console.log('[ARTICULO UPLOAD] Recibido:', {
+      
+      console.log('[ARTICULO UPLOAD] Datos procesados:', {
         autor,
         idusuario,
         idnumero,
         titulo,
         resumen,
-        documento: documento ? `Buffer (${documento.length} bytes)` : null,
         nopaginas,
         fecha
       });
+      
+      // Validaciones
       if (!idusuario || !idnumero) {
+        console.error('[ARTICULO UPLOAD] Error: idusuario e idnumero son obligatorios');
         return res.status(400).json({ error: 'idusuario e idnumero son obligatorios y deben ser enteros' });
       }
-      if (!documento) return res.status(400).json({ error: 'Archivo PDF requerido' });
-      const articulo = await Articulo.create({ autor, idUsuario: idusuario, idNumero: idnumero, titulo, resumen, documento, noPaginas: nopaginas, fecha });
-      console.log('[ARTICULO UPLOAD] Guardado en BD:', articulo);
+      
+      if (!req.file) {
+        console.error('[ARTICULO UPLOAD] Error: No se recibió archivo');
+        return res.status(400).json({ error: 'Archivo PDF requerido' });
+      }
+      
+      console.log('[ARTICULO UPLOAD] Leyendo archivo desde:', req.file.path);
+      
+      // Leer el buffer del archivo PDF
+      const documento = req.file && req.file.path ? fs.readFileSync(req.file.path) : null;
+      
+      if (!documento) {
+        console.error('[ARTICULO UPLOAD] Error: No se pudo leer el documento');
+        return res.status(400).json({ error: 'Error al leer el archivo PDF' });
+      }
+      
+      console.log('[ARTICULO UPLOAD] Documento leído exitosamente:', `Buffer (${documento.length} bytes)`);
+      console.log('[ARTICULO UPLOAD] Guardando en base de datos...');
+      
+      const articulo = await Articulo.create({ 
+        autor, 
+        idUsuario: idusuario, 
+        idNumero: idnumero, 
+        titulo, 
+        resumen, 
+        documento, 
+        noPaginas: nopaginas, 
+        fecha 
+      });
+      
+      console.log('[ARTICULO UPLOAD] === UPLOAD EXITOSO ===');
+      console.log('[ARTICULO UPLOAD] Artículo guardado:', articulo);
+      
+      // Limpiar archivo temporal
+      if (req.file && req.file.path) {
+        try {
+          fs.unlinkSync(req.file.path);
+          console.log('[ARTICULO UPLOAD] Archivo temporal eliminado:', req.file.path);
+        } catch (cleanupErr) {
+          console.warn('[ARTICULO UPLOAD] No se pudo eliminar archivo temporal:', cleanupErr.message);
+        }
+      }
+      
       res.status(201).json(articulo);
     } catch (err) {
-      console.error('ERROR UPLOAD ARTICULO:', err);
+      console.error('[ARTICULO UPLOAD] === ERROR CRÍTICO ===');
+      console.error('[ARTICULO UPLOAD] Error completo:', err);
+      console.error('[ARTICULO UPLOAD] Stack trace:', err.stack);
+      
+      // Limpiar archivo temporal en caso de error
+      if (req.file && req.file.path) {
+        try {
+          fs.unlinkSync(req.file.path);
+          console.log('[ARTICULO UPLOAD] Archivo temporal eliminado tras error:', req.file.path);
+        } catch (cleanupErr) {
+          console.warn('[ARTICULO UPLOAD] No se pudo eliminar archivo temporal tras error:', cleanupErr.message);
+        }
+      }
+      
       res.status(500).json({ error: err.message });
     }
   },

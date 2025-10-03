@@ -44,19 +44,85 @@ router.post('/resolve-numero', async (req, res) => {
 
 const storage = multer.diskStorage({
 	destination: function (req, file, cb) {
-		cb(null, path.join(__dirname, '../files'));
+		const filePath = path.join(__dirname, '../files');
+		console.log('[MULTER] Guardando archivo en:', filePath);
+		cb(null, filePath);
 	},
 	filename: function (req, file, cb) {
 		const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-		cb(null, 'articulo-' + uniqueSuffix + path.extname(file.originalname));
+		const filename = 'articulo-' + uniqueSuffix + path.extname(file.originalname);
+		console.log('[MULTER] Nombre de archivo:', filename);
+		cb(null, filename);
 	}
 });
-const upload = multer({ storage });
+
+// Filtro para solo permitir PDFs
+const fileFilter = (req, file, cb) => {
+	console.log('[MULTER] Validando archivo:', {
+		originalname: file.originalname,
+		mimetype: file.mimetype,
+		fieldname: file.fieldname
+	});
+	
+	if (file.mimetype === 'application/pdf') {
+		cb(null, true);
+	} else {
+		cb(new Error('Solo se permiten archivos PDF'), false);
+	}
+};
+
+const upload = multer({ 
+	storage,
+	fileFilter,
+	limits: {
+		fileSize: 10 * 1024 * 1024 // 10MB máximo
+	}
+});
+
+// Middleware para manejar errores de multer
+const handleMulterError = (err, req, res, next) => {
+	console.error('[MULTER ERROR]:', err);
+	if (err instanceof multer.MulterError) {
+		if (err.code === 'LIMIT_FILE_SIZE') {
+			return res.status(400).json({ error: 'El archivo es demasiado grande (máximo 10MB)' });
+		}
+		return res.status(400).json({ error: 'Error al subir archivo: ' + err.message });
+	}
+	if (err.message === 'Solo se permiten archivos PDF') {
+		return res.status(400).json({ error: err.message });
+	}
+	next(err);
+};
 
 // Subir PDF de artículo
-router.post('/upload', upload.single('documento'), articuloController.upload);
+router.post('/upload', (req, res, next) => {
+	console.log('[UPLOAD ENDPOINT] Iniciando upload...');
+	upload.single('documento')(req, res, (err) => {
+		if (err) {
+			console.error('[UPLOAD ERROR]:', err);
+			return handleMulterError(err, req, res, next);
+		}
+		console.log('[UPLOAD SUCCESS] Archivo procesado por multer');
+		console.log('[UPLOAD] req.file:', req.file);
+		console.log('[UPLOAD] req.body:', req.body);
+		articuloController.upload(req, res);
+	});
+});
+
 // Actualizar artículo (incluye PDF opcional)
-router.put('/:id', upload.single('documento'), articuloController.update);
+router.put('/:id', (req, res, next) => {
+	console.log('[UPDATE ENDPOINT] Iniciando update...');
+	upload.single('documento')(req, res, (err) => {
+		if (err) {
+			console.error('[UPDATE ERROR]:', err);
+			return handleMulterError(err, req, res, next);
+		}
+		console.log('[UPDATE SUCCESS] Archivo procesado por multer');
+		console.log('[UPDATE] req.file:', req.file);
+		console.log('[UPDATE] req.body:', req.body);
+		articuloController.update(req, res);
+	});
+});
 // Descargar PDF
 router.get('/file/:filename', articuloController.download);
 
