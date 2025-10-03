@@ -26,12 +26,42 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// Middleware de logging para todas las requests
+app.use((req, res, next) => {
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
+    next();
+});
+
 
 // Rutas API
-app.use('/api/usuarios', require('./routes/usuarioRoutes'));
-app.use('/api/articulos', require('./routes/articuloRoutes'));
-app.use('/api/noticias', require('./routes/noticiaRoutes'));
-app.use('/api/videos', require('./routes/videoRoutes'));
+console.log('Cargando rutas...');
+try {
+    app.use('/api/usuarios', require('./routes/usuarioRoutes'));
+    console.log('✓ Rutas de usuarios cargadas');
+} catch (err) {
+    console.error('✗ Error cargando rutas de usuarios:', err.message);
+}
+
+try {
+    app.use('/api/articulos', require('./routes/articuloRoutes'));
+    console.log('✓ Rutas de artículos cargadas');
+} catch (err) {
+    console.error('✗ Error cargando rutas de artículos:', err.message);
+}
+
+try {
+    app.use('/api/noticias', require('./routes/noticiaRoutes'));
+    console.log('✓ Rutas de noticias cargadas');
+} catch (err) {
+    console.error('✗ Error cargando rutas de noticias:', err.message);
+}
+
+try {
+    app.use('/api/videos', require('./routes/videoRoutes'));
+    console.log('✓ Rutas de videos cargadas');
+} catch (err) {
+    console.error('✗ Error cargando rutas de videos:', err.message);
+}
 
 // Ruta de login de usuario
 const Usuario = require('./models/usuario');
@@ -75,8 +105,15 @@ app.get('/health', (req, res) => {
     res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
+// Middleware de manejo de errores globales
+app.use((err, req, res, next) => {
+    console.error('Error global capturado:', err);
+    res.status(500).json({ error: 'Error interno del servidor', details: err.message });
+});
+
 // Ruta por defecto (sin servir frontend)
 app.use((req, res) => {
+    console.log('Ruta no encontrada:', req.path);
     res.status(404).json({ error: 'Ruta no encontrada' });
 });
 
