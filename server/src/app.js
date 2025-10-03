@@ -15,7 +15,8 @@ const validarToken = require('./middlewares/validarToken');
 const app = express();
 const SECRET_KEY = process.env.SECRET_KEY || 'secret';
 
-// Configuración CORS para producción y desarrollo
+
+// Configuración CORS para producción y desarrollo (debe ir antes de cualquier ruta)
 app.use(cors({
     origin: process.env.NODE_ENV === 'production'
         ? 'https://revista-explora-unison.vercel.app'
@@ -23,6 +24,8 @@ app.use(cors({
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
+// Handler explícito para preflight OPTIONS
+app.options('*', cors());
 app.use(express.json());
 
 // Rutas API
