@@ -3,7 +3,7 @@ require('dotenv').config();
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  // Puedes agregar más opciones si es necesario
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
 });
 
 module.exports = pool;
