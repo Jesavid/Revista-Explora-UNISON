@@ -18,7 +18,6 @@ const SECRET_KEY = process.env.SECRET_KEY || 'secret';
 
 // CORS abierto para pruebas
 app.use(cors());
-app.options('*', cors());
 app.use(express.json());
 
 // Rutas API
