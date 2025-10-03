@@ -1,3 +1,10 @@
+// Log global de errores fatales
+process.on('uncaughtException', err => {
+    console.error('Uncaught Exception:', err);
+});
+process.on('unhandledRejection', err => {
+    console.error('Unhandled Rejection:', err);
+});
 // ...existing code...
 const express = require('express');
 const path = require('path');
