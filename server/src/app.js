@@ -70,11 +70,25 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-// Servir frontend compilado
-app.use(express.static(path.join(__dirname, '../client/build')));
+// Ruta de health check para Railway
+app.get('/health', (req, res) => {
+    res.json({ status: 'OK', timestamp: new Date().toISOString() });
+});
+
+// Ruta por defecto (sin servir frontend)
 app.use((req, res) => {
-    res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
+    res.status(404).json({ error: 'Ruta no encontrada' });
 });
 
 const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => console.log(`Server corriendo en http://localhost:${PORT}`));
+console.log('Starting server with PORT:', PORT);
+console.log('NODE_ENV:', process.env.NODE_ENV);
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server corriendo en http://0.0.0.0:${PORT}`);
+    console.log('Rutas disponibles:');
+    console.log('- GET /health');
+    console.log('- /api/articulos');
+    console.log('- /api/noticias'); 
+    console.log('- /api/videos');
+    console.log('- /api/usuarios');
+});
