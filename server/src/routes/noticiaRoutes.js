@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const noticiaController = require('../controllers/noticiaController');
+// Endpoint para servir portada desde bytea
+router.get('/portada/:id', noticiaController.portada);
 const multer = require('multer');
 const path = require('path');
 const storage = multer.diskStorage({

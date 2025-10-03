@@ -7,7 +7,7 @@ export const contentService = {
       fetch('/api/videos'),
       fetch('/api/noticias')
     ]);
-    const [rawArticles, videos, news] = await Promise.all([
+    const [rawArticles, rawVideos, rawNews] = await Promise.all([
       articlesRes.ok ? articlesRes.json() : [],
       videosRes.ok ? videosRes.json() : [],
       newsRes.ok ? newsRes.json() : [],
@@ -21,9 +21,25 @@ export const contentService = {
       nopaginas: a.nopaginas,
       idnumero: a.idnumero,
       idusuario: a.idusuario,
-      // Generar URL de descarga del PDF si existe
       pdfUrl: a.idarticulo ? `/api/articulos/file/articulo-${a.idarticulo}.pdf` : null,
-      // Puedes agregar más campos si los necesitas
+    }));
+    // Mapear videos a la estructura esperada por el frontend
+    const videos = rawVideos.map(v => ({
+  id: v.idvideo,
+  title: v.titulo,
+  description: v.resumen,
+  videoId: v.ruta,
+  ruta: v.ruta
+    }));
+    // Mapear noticias a la estructura esperada por el frontend
+    const news = rawNews.map(n => ({
+  id: n.idnoticia,
+  title: n.titulo,
+  description: n.resumen,
+  date: n.fechanoticia,
+  imageUrl: n.foto ? `/api/noticias/portada/${n.idnoticia}` : null,
+  author: n.autor || n.idusuario,
+  content: n.contenido
     }));
     return {
       articles,

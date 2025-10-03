@@ -52,21 +52,35 @@ function Home() {
             </Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {videos.map((video) => (
-              <div 
-                key={video.id} 
-                className="bg-white p-4 rounded-lg shadow-md transition-all duration-300 hover:shadow-xl hover:scale-105 cursor-pointer"
-              >
-                <iframe
-                  className="mb-4 rounded-lg w-full"
-                  height="200"
-                  src={`https://www.youtube.com/embed/${video.videoId}`}
-                  title={video.title}
-                  loading="lazy"
-                ></iframe>
-                <h3 className="text-xl font-bold text-gray-800">{video.title}</h3>
-              </div>
-            ))}
+            {videos.map((video) => {
+              // Extraer el ID de YouTube desde la URL (ruta)
+              let videoId = "";
+              if (video.ruta) {
+                const match = video.ruta.match(/(?:v=|be\/?|embed\/)([\w-]{11})/);
+                videoId = match ? match[1] : "";
+              }
+              return (
+                <div 
+                  key={video.id} 
+                  className="bg-white p-4 rounded-lg shadow-md transition-all duration-300 hover:shadow-xl hover:scale-105 cursor-pointer"
+                >
+                  {videoId ? (
+                    <iframe
+                      className="mb-4 rounded-lg w-full"
+                      height="200"
+                      src={`https://www.youtube.com/embed/${videoId}`}
+                      title={video.title}
+                      loading="lazy"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    ></iframe>
+                  ) : (
+                    <div className="mb-4 h-48 flex items-center justify-center bg-gray-100 rounded-lg text-gray-400">Sin video</div>
+                  )}
+                  <h3 className="text-xl font-bold text-gray-800">{video.title}</h3>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>

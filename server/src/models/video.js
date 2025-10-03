@@ -8,10 +8,10 @@
 const pool = require('./db');
 
 const Video = {
-  async create({ idUsuario, titulo, resumen, imagen }) {
+  async create({ idUsuario, titulo, resumen, ruta }) {
     const result = await pool.query(
-      'INSERT INTO video (idusuario, titulo, resumen, imagen) VALUES ($1, $2, $3, $4) RETURNING *',
-      [idUsuario, titulo, resumen, imagen]
+      'INSERT INTO video (idusuario, titulo, resumen, ruta) VALUES ($1, $2, $3, $4) RETURNING *',
+      [idUsuario, titulo, resumen, ruta]
     );
     return result.rows[0];
   },

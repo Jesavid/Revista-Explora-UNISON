@@ -54,7 +54,7 @@ export default function AddContentModal({
 
 
   const handleSubmit = async () => {
-    if (type === 'Artículo' && !isEditing) {
+  if (type === 'Artículo' && !isEditing) {
       // Resolver año y número
       let anio = selectedVolumen === 'nuevo' ? nuevoAnio : (volumenes.find(v => v.idvolumen == selectedVolumen)?.anio || "");
       let numero = selectedNumero === 'nuevo' ? nuevoNumero : (numeros.find(n => n.idnumero == selectedNumero)?.numero || "");
@@ -100,41 +100,42 @@ export default function AddContentModal({
       } catch (err) {
         alert('Error al subir el artículo');
       }
-      onClose();
-      return;
+  onClose();
+  return;
     }
-    if (type === 'Noticia' && !isEditing) {
-      // ...código existente para noticia...
-      if (formData.imageFile) {
-        const fd = new FormData();
-        fd.append('titulo', formData.title);
-  fd.append('username', localStorage.getItem('username') || '');
-        fd.append('resumen', formData.description);
-        fd.append('contenido', formData.content);
-        fd.append('fechaNoticia', formData.date);
-        fd.append('foto', formData.imageFile);
-        try {
-          const token = localStorage.getItem('token');
-          await fetch('/api/noticias/upload', {
-            method: 'POST',
-            headers: token ? { 'Authorization': `Bearer ${token}` } : {},
-            body: fd
-          });
-        } catch (err) {
-          alert('Error al subir la noticia');
-        }
-        onClose();
-        return;
-      } else {
-        addContent(formData, type);
-        onClose();
-        return;
-      }
-    }
-    if (type === 'Video' && !isEditing) {
+          {type === 'Noticia' && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Título</label>
+                <input name="title" value={formData.title || ''} onChange={handleChange} className="border-gray-300 p-2 rounded-lg w-full shadow-sm" />
+              </div>
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Autor</label>
+                <input name="autor" value={formData.autor || ''} onChange={handleChange} className="border-gray-300 p-2 rounded-lg w-full shadow-sm" />
+              </div>
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Resumen</label>
+                <textarea name="description" value={formData.description || ''} onChange={handleChange} className="border-gray-300 p-2 rounded-lg w-full shadow-sm" rows="3"></textarea>
+              </div>
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Contenido</label>
+                <textarea name="content" value={formData.content || ''} onChange={handleChange} className="border-gray-300 p-2 rounded-lg w-full shadow-sm" rows="5"></textarea>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Fecha</label>
+                <input type="date" name="date" value={formData.date || ''} onChange={handleChange} className="border-gray-300 p-2 rounded-lg w-full shadow-sm" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Portada (imagen)</label>
+                <input type="file" name="imageFile" accept="image/*" onChange={handleChange} className="border-gray-300 p-2 rounded-lg w-full shadow-sm" />
+              </div>
+            </div>
+          )}
+  if (type === 'Video' && !isEditing) {
       // Guardar video embebido
       try {
         const token = localStorage.getItem('token');
+        const idUsuario = localStorage.getItem('idusuario');
         await fetch('/api/videos', {
           method: 'POST',
           headers: {
@@ -142,22 +143,49 @@ export default function AddContentModal({
             ...(token ? { 'Authorization': `Bearer ${token}` } : {})
           },
           body: JSON.stringify({
+            idUsuario: idUsuario ? Number(idUsuario) : null,
             titulo: formData.title,
             resumen: formData.description,
-            imagen: formData.videoId, // Aquí puedes guardar el ID o la URL embebida
-            username: localStorage.getItem('username') || ''
+            ruta: formData.videoId
           })
         });
       } catch (err) {
         alert('Error al subir el video');
       }
+  onClose();
+  return;
+    }
+    if (type === 'Noticia') {
+      // Usar FormData para noticia (agregar o editar)
+      const fd = new FormData();
+      fd.append('titulo', formData.title);
+      fd.append('autor', formData.autor);
+      fd.append('resumen', formData.description);
+      fd.append('contenido', formData.content);
+      fd.append('fechaNoticia', formData.date ? formData.date.substring(0, 10) : '');
+      fd.append('idUsuario', localStorage.getItem('idusuario') || '');
+      if (formData.imageFile) {
+        fd.append('foto', formData.imageFile);
+      }
+      try {
+        const token = localStorage.getItem('token');
+        await fetch('/api/noticias/upload', {
+          method: 'POST',
+          headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+          body: fd
+        });
+      } catch (err) {
+        alert('Error al subir la noticia');
+      }
+      // Esperar a que el padre recargue el contenido antes de cerrar
+      if (addContent) await addContent({}, type);
       onClose();
       return;
     }
     if (isEditing) {
-      updateContent(formData, type);
+      if (updateContent) await updateContent(formData, type);
     } else {
-      addContent(formData, type);
+      if (addContent) await addContent(formData, type);
     }
     onClose();
   };
@@ -245,6 +273,10 @@ export default function AddContentModal({
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Título de la Noticia</label>
                 <input name="title" value={formData.title || ''} onChange={handleChange} className="border-gray-300 p-2 rounded-lg w-full shadow-sm" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Autor</label>
+                <input name="autor" value={formData.autor || ''} onChange={handleChange} className="border-gray-300 p-2 rounded-lg w-full shadow-sm" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Fecha</label>

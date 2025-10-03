@@ -1,3 +1,4 @@
+// ...existing code...
 const express = require('express');
 const path = require('path');
 const cors = require('cors');
@@ -38,6 +39,12 @@ app.post('/api/login', async (req, res) => {
 // Ruta protegida usando middleware
 app.get('/admin', validarToken, (req, res) => {
     res.json({ message: 'Bienvenido al panel de admin', user: req.user });
+});
+
+
+// Endpoint para validar token JWT (debe ir antes de servir el frontend)
+app.get('/api/validate-token', validarToken, (req, res) => {
+    res.status(200).json({ valid: true, user: req.user });
 });
 
 // Servir frontend compilado

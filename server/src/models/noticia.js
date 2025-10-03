@@ -10,11 +10,13 @@
 const pool = require('./db');
 
 const Noticia = {
-  async create({ idUsuario, titulo, resumen, foto, contenido, fechaNoticia }) {
+  async create({ idUsuario, autor, titulo, resumen, foto, contenido, fechaNoticia }) {
     // foto es el nombre del archivo guardado
+    // Guardar fecha solo como YYYY-MM-DD
+    const fecha = fechaNoticia ? fechaNoticia.substring(0, 10) : null;
     const result = await pool.query(
-      'INSERT INTO noticia (idusuario, titulo, resumen, foto, contenido, fechanoticia) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-      [idUsuario, titulo, resumen, foto, contenido, fechaNoticia]
+      'INSERT INTO noticia (idusuario, autor, titulo, resumen, foto, contenido, fechanoticia) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+      [idUsuario, autor, titulo, resumen, foto, contenido, fecha]
     );
     return result.rows[0];
   },
