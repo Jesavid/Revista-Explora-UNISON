@@ -1,28 +1,66 @@
+/**
+ * EXPLORA UNISON - Frontend Principal
+ * 
+ * Aplicación React para la revista académica Explora UNISON
+ * Sistema de gestión de contenido con autenticación administrativa
+ * 
+ * Tecnologías: React 19, React Router, Vite, TailwindCSS
+ * Despliegue: Vercel
+ * 
+ * Funcionalidades:
+ * - Visualización pública de artículos, noticias y videos
+ * - Panel administrativo protegido con JWT
+ * - Búsqueda de contenido
+ * - Responsive design
+ */
+
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { contentService } from "./services/contentService";
+
+// Componentes de navegación y layout
 import ScrollToTop from "./components/ScrollToTop";
 import Layout from "./components/Layout";
+
+// Páginas públicas
 import Home from "./pages/Home";
 import Articles from "./pages/Articles";
 import ArticlePage from "./pages/ArticlePage";
-import Admin from "./pages/Admin";
-import AdminLoginPage from "./pages/AdminLoginPage";
 import Videos from "./pages/Videos";
 import Noticias from "./pages/Noticias";
 import NoticiaPage from "./pages/NoticiaPage";
 
+// Páginas administrativas
+import Admin from "./pages/Admin";
+import AdminLoginPage from "./pages/AdminLoginPage";
 
 function App() {
+  // ========================================================================================
+  // ESTADO DE LA APLICACIÓN
+  // ========================================================================================
+  
+  // Estado de búsqueda global
   const [search, setSearch] = useState("");
+  
+  // Estado de autenticación (persistido en localStorage)
   const [isAuthenticated, setIsAuthenticated] = useState(() => !!localStorage.getItem("token"));
+  
+  // Hook de navegación
   const navigate = useNavigate();
 
+  // Estado del contenido principal (artículos, videos, noticias)
   const [content, setContent] = useState({ articles: [], videos: [], news: [] });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Cargar contenido desde el backend
+  // ========================================================================================
+  // GESTIÓN DE CONTENIDO
+  // ========================================================================================
+
+  /**
+   * Cargar todo el contenido desde el backend
+   * Función central que mantiene sincronizado el estado con la API
+   */
   const loadContent = async () => {
     try {
       setLoading(true);
@@ -37,16 +75,30 @@ function App() {
     }
   };
 
+  // Cargar contenido al iniciar la aplicación
   useEffect(() => {
     loadContent();
   }, []);
 
+  // Mapeo de tipos de contenido para el backend
   const keyMap = { Artículo: 'articles', Video: 'videos', Noticia: 'news' };
 
-  // Forzar recarga de contenido tras agregar/editar/eliminar
+  // ========================================================================================
+  // HANDLERS DE CONTENIDO ADMINISTRATIVO
+  // ========================================================================================
+
+  /**
+   * Handler para agregar nuevo contenido
+   * Recarga todo el contenido para mantener sincronización
+   */
   const handleAddContent = async (newContent, type) => {
     await loadContent();
   };
+
+  /**
+   * Handler para actualizar contenido existente
+   * Recarga todo el contenido para mantener sincronización
+   */
   const handleUpdateContent = async (updatedContent, type) => {
     await loadContent();
   };

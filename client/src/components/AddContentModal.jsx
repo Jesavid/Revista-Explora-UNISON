@@ -1,16 +1,58 @@
+/**
+ * MODAL DE GESTIÓN DE CONTENIDO
+ * 
+ * Componente modal universal para agregar y editar artículos, noticias y videos
+ * Maneja diferentes tipos de contenido con formularios específicos y validaciones
+ * 
+ * Funcionalidades:
+ * - Formularios dinámicos según tipo de contenido
+ * - Upload de archivos (PDFs para artículos, imágenes para noticias)
+ * - Gestión de volúmenes y números para artículos
+ * - Integración con YouTube para videos
+ * - Validación de datos y manejo de errores
+ */
+
 import { useState, useEffect } from "react";
+
+// URL base de la API desde variables de entorno
 const API_URL = import.meta.env.VITE_API_URL || '';
 
-// Utilidad para obtener años y números desde el backend
+// ========================================================================================
+// FUNCIONES AUXILIARES PARA ARTÍCULOS
+// ========================================================================================
+
+/**
+ * Obtener años (volúmenes) disponibles desde el backend
+ * @returns {Array} Lista de volúmenes con idvolumen y anio
+ */
 async function fetchVolumenes() {
   const res = await fetch(`${API_URL}/api/articulos/volumenes`);
   return res.ok ? res.json() : [];
 }
+
+/**
+ * Obtener números disponibles para un volumen específico
+ * @param {string} idVolumen - ID del volumen
+ * @returns {Array} Lista de números con idnumero y numero
+ */
 async function fetchNumeros(idVolumen) {
   const res = await fetch(`${API_URL}/api/articulos/numeros?volumen=${idVolumen}`);
   return res.ok ? res.json() : [];
 }
 
+// ========================================================================================
+// COMPONENTE PRINCIPAL
+// ========================================================================================
+
+/**
+ * Modal de gestión de contenido
+ * 
+ * @param {string} type - Tipo de contenido ('Artículo', 'Video', 'Noticia')
+ * @param {Function} onClose - Callback para cerrar el modal
+ * @param {Object} contentToEdit - Contenido a editar (null para crear nuevo)
+ * @param {Function} addContent - Callback para agregar contenido
+ * @param {Function} updateContent - Callback para actualizar contenido
+ */
 export default function AddContentModal({
   type,
   onClose,
@@ -18,14 +60,27 @@ export default function AddContentModal({
   addContent,
   updateContent
 }) {
+  // ========================================================================================
+  // ESTADO DEL COMPONENTE
+  // ========================================================================================
+  
+  // Datos del formulario
   const [formData, setFormData] = useState({});
+  
+  // Estado específico para artículos (volúmenes y números)
   const [volumenes, setVolumenes] = useState([]);
   const [numeros, setNumeros] = useState([]);
   const [nuevoAnio, setNuevoAnio] = useState("");
   const [nuevoNumero, setNuevoNumero] = useState("");
   const [selectedVolumen, setSelectedVolumen] = useState("");
   const [selectedNumero, setSelectedNumero] = useState("");
+  
+  // Determinar si estamos editando o creando
   const isEditing = !!contentToEdit;
+
+  // ========================================================================================
+  // EFECTOS DE INICIALIZACIÓN
+  // ========================================================================================
 
   useEffect(() => {
     if (isEditing) {

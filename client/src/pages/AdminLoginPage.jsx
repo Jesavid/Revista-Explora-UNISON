@@ -1,15 +1,30 @@
-// src/pages/AdminLoginPage.jsx
+/**
+ * @fileoverview Página de Login del Administrador
+ * @description Componente para autenticación de administradores con validación JWT
+ */
 
 import { useState } from "react";
 const API_URL = import.meta.env.VITE_API_URL || '';
 import { useNavigate } from "react-router-dom";
 
+/**
+ * Página de login para administradores
+ * @param {Object} props - Props del componente
+ * @param {Function} props.onLogin - Callback ejecutado tras login exitoso
+ * @returns {JSX.Element} Formulario de login con validación
+ * @description Maneja autenticación, almacena token JWT y redirige al panel admin
+ */
 export default function AdminLoginPage({ onLogin }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  /**
+   * Maneja el proceso de autenticación
+   * @param {Event} e - Evento del formulario
+   * @description Envía credenciales al servidor, guarda token y redirige
+   */
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
