@@ -153,13 +153,53 @@ export const contentService = {
   },
 
   /**
-   * Eliminar contenido (no implementado - se usa el modal directo)
+   * Eliminar contenido
    * @param {string} id - ID del elemento a eliminar
-   * @param {string} type - Tipo de contenido
+   * @param {string} type - Tipo de contenido ('articulo', 'noticia', 'video')
    * @returns {Object} Resultado de la operación
    */
   deleteContent: async (id, type) => {
-    // El modal maneja directamente las peticiones de eliminación
-    return { success: true };
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No hay token de autenticación');
+      }
+
+      // Mapear tipos a endpoints
+      const endpoints = {
+        'articulo': '/api/articulos',
+        'noticia': '/api/noticias', 
+        'video': '/api/videos'
+      };
+
+      const endpoint = endpoints[type];
+      if (!endpoint) {
+        throw new Error(`Tipo de contenido no válido: ${type}`);
+      }
+
+      console.log(`[DELETE] Eliminando ${type} ID: ${id}`);
+      
+      const response = await fetch(`${API_URL}${endpoint}/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `Error ${response.status}: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      console.log(`[DELETE] ${type} eliminado exitosamente:`, result);
+      
+      return { success: true, message: result.message, id: result.id };
+      
+    } catch (error) {
+      console.error(`[DELETE ERROR] Error eliminando ${type}:`, error);
+      return { success: false, error: error.message };
+    }
   }
 };

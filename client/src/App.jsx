@@ -102,10 +102,30 @@ function App() {
   const handleUpdateContent = async (updatedContent, type) => {
     await loadContent();
   };
+  /**
+   * Maneja la eliminación de contenido
+   * @param {string} id - ID del elemento a eliminar  
+   * @param {string} type - Tipo de contenido
+   */
   const handleDeleteContent = async (id, type) => {
     if (window.confirm(`¿Estás seguro de que quieres eliminar este ${type.toLowerCase()}?`)) {
-      // Aquí deberías hacer la petición real de borrado si la implementas
-      await loadContent();
+      try {
+        console.log(`[APP] Eliminando ${type} ID: ${id}`);
+        
+        const result = await contentService.deleteContent(id, type);
+        
+        if (result.success) {
+          console.log(`[APP] ${type} eliminado exitosamente`);
+          // Recargar contenido para reflejar cambios
+          await loadContent();
+        } else {
+          console.error(`[APP] Error eliminando ${type}:`, result.error);
+          alert(`Error al eliminar ${type}: ${result.error}`);
+        }
+      } catch (error) {
+        console.error(`[APP] Error inesperado eliminando ${type}:`, error);
+        alert(`Error inesperado al eliminar ${type}`);
+      }
     }
   };
 
