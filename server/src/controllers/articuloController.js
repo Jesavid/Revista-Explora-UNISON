@@ -1,9 +1,19 @@
+/**
+ * @fileoverview Controlador de Artículos - Manejo de artículos PDF
+ * @description Controlador para operaciones CRUD de artículos con upload de archivos PDF
+ */
+
 const Articulo = require('../models/articulo');
 const path = require('path');
 const fs = require('fs');
 
 const articuloController = {
-  // Subida de PDF
+  /**
+   * Sube un nuevo artículo con archivo PDF
+   * @param {Object} req - Request con archivo PDF y datos del artículo
+   * @param {Object} res - Response con el artículo creado
+   * @description Procesa upload de PDF, valida datos y guarda en base de datos como bytea
+   */
   async upload(req, res) {
     try {
       console.log('[ARTICULO UPLOAD] === INICIANDO UPLOAD ===');
@@ -94,7 +104,13 @@ const articuloController = {
       res.status(500).json({ error: err.message });
     }
   },
-  // Actualizar artículo
+  
+  /**
+   * Actualiza un artículo existente
+   * @param {Object} req - Request con ID del artículo y datos actualizados
+   * @param {Object} res - Response con el artículo actualizado
+   * @description Permite actualizar datos y opcionalmente el archivo PDF
+   */
   async update(req, res) {
     try {
       const idArticulo = req.params.id;
@@ -125,7 +141,13 @@ const articuloController = {
       res.status(500).json({ error: err.message });
     }
   },
-  // Descargar PDF
+  
+  /**
+   * Descarga el PDF de un artículo
+   * @param {Object} req - Request con el ID del artículo en params.filename
+   * @param {Object} res - Response con el archivo PDF
+   * @description Sirve el PDF directamente desde la base de datos
+   */
   async download(req, res) {
     try {
       // Espera ruta: /api/articulos/file/:idarticulo
@@ -142,6 +164,13 @@ const articuloController = {
       res.status(500).json({ error: err.message });
     }
   },
+  
+  /**
+   * Crea un nuevo artículo (sin archivo)
+   * @param {Object} req - Request con datos del artículo
+   * @param {Object} res - Response con el artículo creado
+   * @description Método alternativo para crear artículos sin upload de archivo
+   */
   async create(req, res) {
     try {
       const { autor, idUsuario, idNumero, titulo, resumen, documento, noPaginas, fecha } = req.body;
@@ -151,6 +180,13 @@ const articuloController = {
       res.status(500).json({ error: err.message });
     }
   },
+  
+  /**
+   * Obtiene todos los artículos
+   * @param {Object} req - Request object
+   * @param {Object} res - Response con array de artículos
+   * @description Retorna lista completa de artículos sin archivos PDF
+   */
   async getAll(req, res) {
     try {
       const articulos = await Articulo.findAll();

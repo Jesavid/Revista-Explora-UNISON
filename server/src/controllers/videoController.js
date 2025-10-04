@@ -1,6 +1,17 @@
+/**
+ * @fileoverview Controlador de Videos - Manejo de contenido de videos
+ * @description Controlador para operaciones CRUD de videos
+ */
+
 const Video = require('../models/video');
 
 const videoController = {
+  /**
+   * Crea un nuevo video
+   * @param {Object} req - Request con datos del video (idUsuario, titulo, resumen, ruta)
+   * @param {Object} res - Response con el video creado
+   * @description Registra un nuevo video en la base de datos
+   */
   async create(req, res) {
     try {
   const { idUsuario, titulo, resumen, ruta } = req.body;
@@ -12,6 +23,13 @@ const videoController = {
       res.status(500).json({ error: err.message });
     }
   },
+  
+  /**
+   * Obtiene todos los videos
+   * @param {Object} req - Request object
+   * @param {Object} res - Response con array de videos
+   * @description Retorna lista completa de videos disponibles
+   */
   async getAll(req, res) {
     try {
       const videos = await Video.findAll();

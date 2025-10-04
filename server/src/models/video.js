@@ -1,13 +1,28 @@
-// Modelo Video
-// idVideo SERIAL PRIMARY KEY,
-// idUsuario INT NOT NULL,
-// titulo VARCHAR NOT NULL,
-// resumen VARCHAR NOT NULL,
-// imagen VARCHAR NOT NULL
+/**
+ * @fileoverview Modelo Video - Manejo de datos de videos
+ * @description Modelo para operaciones CRUD de videos en la base de datos
+ * 
+ * Estructura de la tabla:
+ * - idVideo SERIAL PRIMARY KEY,
+ * - idUsuario INT NOT NULL,
+ * - titulo VARCHAR NOT NULL,
+ * - resumen VARCHAR NOT NULL,
+ * - ruta VARCHAR NOT NULL
+ */
 
 const pool = require('./db');
 
 const Video = {
+  /**
+   * Crea un nuevo video en la base de datos
+   * @param {Object} videoData - Datos del video a crear
+   * @param {number} videoData.idUsuario - ID del usuario que crea el video
+   * @param {string} videoData.titulo - Título del video
+   * @param {string} videoData.resumen - Resumen del video
+   * @param {string} videoData.ruta - Ruta del archivo de video
+   * @returns {Promise<Object>} Video creado con su ID generado
+   * @throws {Error} Error de base de datos si falla la inserción
+   */
   async create({ idUsuario, titulo, resumen, ruta }) {
     const result = await pool.query(
       'INSERT INTO video (idusuario, titulo, resumen, ruta) VALUES ($1, $2, $3, $4) RETURNING *',
@@ -15,12 +30,25 @@ const Video = {
     );
     return result.rows[0];
   },
+  
+  /**
+   * Busca un video por su ID
+   * @param {number} idVideo - ID del video a buscar
+   * @returns {Promise<Object|undefined>} Video encontrado o undefined si no existe
+   * @throws {Error} Error de base de datos si falla la consulta
+   */
   async findById(idVideo) {
-  const result = await pool.query('SELECT * FROM video WHERE idvideo = $1', [idVideo]);
+    const result = await pool.query('SELECT * FROM video WHERE idvideo = $1', [idVideo]);
     return result.rows[0];
   },
+  
+  /**
+   * Obtiene todos los videos de la base de datos
+   * @returns {Promise<Array>} Array con todos los videos
+   * @throws {Error} Error de base de datos si falla la consulta
+   */
   async findAll() {
-  const result = await pool.query('SELECT * FROM video');
+    const result = await pool.query('SELECT * FROM video');
     return result.rows;
   }
 };
