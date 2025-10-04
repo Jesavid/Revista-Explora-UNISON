@@ -636,5 +636,4 @@ Este proyecto está bajo la Licencia MIT. Ver `LICENSE` para más detalles.
 ---
 
 **Última actualización**: Octubre 2025  
-**Versión**: 1.0.0  
-**Mantenedor**: @alanliz
+**Versión**: 1.0.0
