@@ -635,14 +635,6 @@ Este proyecto está bajo la Licencia MIT. Ver `LICENSE` para más detalles.
 
 ---
 
-## 📞 Soporte
-
-- **Issues**: [GitHub Issues](https://github.com/alanliz/exploraunison/issues)
-- **Email**: admin@unison.mx
-- **Wiki**: [Documentación Técnica](https://github.com/alanliz/exploraunison/wiki)
-
----
-
 **Última actualización**: Octubre 2025  
 **Versión**: 1.0.0  
 **Mantenedor**: @alanliz
