@@ -114,8 +114,10 @@ export default function AddContentModal({
       } catch (err) {
         alert('Error al subir el artículo');
       }
-  onClose();
-  return;
+      // Esperar a que el padre recargue el contenido antes de cerrar
+      if (addContent) await addContent({ ...formData, date: formData.date ? formData.date.substring(0, 10) : '' }, type);
+      onClose();
+      return;
     }
           {type === 'Noticia' && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
@@ -166,8 +168,10 @@ export default function AddContentModal({
       } catch (err) {
         alert('Error al subir el video');
       }
-  onClose();
-  return;
+      // Esperar a que el padre recargue el contenido antes de cerrar
+      if (addContent) await addContent({ ...formData, date: formData.date || new Date().toISOString().split('T')[0] }, type);
+      onClose();
+      return;
     }
     if (type === 'Noticia') {
       // Usar FormData para noticia (agregar o editar)
