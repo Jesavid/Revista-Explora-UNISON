@@ -187,11 +187,51 @@ const articuloController = {
    * @param {Object} res - Response con array de artículos
    * @description Retorna lista completa de artículos sin archivos PDF
    */
+  /**
+   * Obtiene todos los artículos
+   * @param {Object} req - Request object
+   * @param {Object} res - Response con array de artículos
+   * @description Retorna lista completa de artículos sin archivos PDF
+   */
   async getAll(req, res) {
     try {
       const articulos = await Articulo.findAll();
       res.json(articulos);
     } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  },
+  
+  /**
+   * Elimina un artículo por su ID
+   * @param {Object} req - Request con ID del artículo en params.id
+   * @param {Object} res - Response con confirmación de eliminación
+   * @description Elimina el artículo y su archivo PDF de la base de datos
+   */
+  async delete(req, res) {
+    try {
+      const idArticulo = req.params.id;
+      
+      // Verificar que el artículo existe
+      const articuloExistente = await Articulo.findById(idArticulo);
+      if (!articuloExistente) {
+        return res.status(404).json({ error: 'Artículo no encontrado' });
+      }
+      
+      console.log('[ARTICULO DELETE] Eliminando artículo ID:', idArticulo);
+      
+      // Eliminar artículo de la base de datos
+      await Articulo.delete(idArticulo);
+      
+      console.log('[ARTICULO DELETE] Artículo eliminado exitosamente');
+      res.json({ 
+        success: true, 
+        message: 'Artículo eliminado exitosamente',
+        id: idArticulo 
+      });
+      
+    } catch (err) {
+      console.error('ERROR eliminando artículo:', err);
       res.status(500).json({ error: err.message });
     }
   }

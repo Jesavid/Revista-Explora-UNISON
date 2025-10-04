@@ -42,13 +42,44 @@ const Articulo = {
     );
     return result.rows[0];
   },
+  
+  /**
+   * Busca un artículo por su ID
+   * @param {number} idArticulo - ID del artículo a buscar
+   * @returns {Promise<Object|undefined>} Artículo encontrado o undefined si no existe
+   * @throws {Error} Error de base de datos si falla la consulta
+   */
   async findById(idArticulo) {
     const result = await pool.query('SELECT * FROM articulo WHERE idarticulo = $1', [idArticulo]);
     return result.rows[0];
   },
+  
+  /**
+   * Obtiene todos los artículos
+   * @returns {Promise<Array>} Array con todos los artículos
+   * @throws {Error} Error de base de datos si falla la consulta
+   */
   async findAll() {
     const result = await pool.query('SELECT * FROM articulo');
     return result.rows;
+  },
+  
+  /**
+   * Elimina un artículo por su ID
+   * @param {number} idArticulo - ID del artículo a eliminar
+   * @returns {Promise<boolean>} true si se eliminó exitosamente, false si no se encontró
+   * @throws {Error} Error de base de datos si falla la operación
+   */
+  async delete(idArticulo) {
+    console.log('[ARTICULO MODEL] Eliminando artículo ID:', idArticulo);
+    
+    const result = await pool.query(
+      'DELETE FROM articulo WHERE idarticulo = $1 RETURNING idarticulo',
+      [idArticulo]
+    );
+    
+    console.log('[ARTICULO MODEL] Resultado DELETE:', result.rows.length > 0 ? 'Eliminado' : 'No encontrado');
+    return result.rows.length > 0;
   }
 };
 

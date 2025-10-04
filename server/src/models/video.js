@@ -47,9 +47,32 @@ const Video = {
    * @returns {Promise<Array>} Array con todos los videos
    * @throws {Error} Error de base de datos si falla la consulta
    */
+  /**
+   * Obtiene todos los videos de la base de datos
+   * @returns {Promise<Array>} Array con todos los videos
+   * @throws {Error} Error de base de datos si falla la consulta
+   */
   async findAll() {
     const result = await pool.query('SELECT * FROM video');
     return result.rows;
+  },
+  
+  /**
+   * Elimina un video por su ID
+   * @param {number} idVideo - ID del video a eliminar
+   * @returns {Promise<boolean>} true si se eliminó exitosamente, false si no se encontró
+   * @throws {Error} Error de base de datos si falla la operación
+   */
+  async delete(idVideo) {
+    console.log('[VIDEO MODEL] Eliminando video ID:', idVideo);
+    
+    const result = await pool.query(
+      'DELETE FROM video WHERE idvideo = $1 RETURNING idvideo',
+      [idVideo]
+    );
+    
+    console.log('[VIDEO MODEL] Resultado DELETE:', result.rows.length > 0 ? 'Eliminado' : 'No encontrado');
+    return result.rows.length > 0;
   }
 };
 

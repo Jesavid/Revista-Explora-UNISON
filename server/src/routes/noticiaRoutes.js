@@ -18,6 +18,7 @@
 const express = require('express');
 const router = express.Router();
 const noticiaController = require('../controllers/noticiaController');
+const validarToken = require('../middlewares/validarToken');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
@@ -87,7 +88,7 @@ router.get('/file/:filename', noticiaController.download);
 router.post('/', noticiaController.create);                          // Crear noticia sin imagen
 router.get('/', noticiaController.getAll);                          // Listar todas las noticias
 router.get('/:id', noticiaController.getById);                      // Obtener noticia específica
-router.put('/:id', upload.single('foto'), noticiaController.update); // Actualizar noticia (con nueva imagen opcional)
-router.delete('/:id', noticiaController.delete);                    // Eliminar noticia
+router.put('/:id', validarToken, upload.single('foto'), noticiaController.update); // Actualizar noticia (con nueva imagen opcional)
+router.delete('/:id', validarToken, noticiaController.delete);      // Eliminar noticia
 
 module.exports = router;

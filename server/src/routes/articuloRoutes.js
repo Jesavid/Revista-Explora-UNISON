@@ -2,6 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const articuloController = require('../controllers/articuloController');
+const validarToken = require('../middlewares/validarToken');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
@@ -138,5 +139,6 @@ router.get('/file/:filename', articuloController.download);
 
 router.post('/', articuloController.create);
 router.get('/', articuloController.getAll);
+router.delete('/:id', validarToken, articuloController.delete);     // Eliminar artículo
 
 module.exports = router;
