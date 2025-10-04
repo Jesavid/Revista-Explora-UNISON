@@ -155,7 +155,7 @@ export const contentService = {
   /**
    * Eliminar contenido
    * @param {string} id - ID del elemento a eliminar
-   * @param {string} type - Tipo de contenido ('articulo', 'noticia', 'video')
+   * @param {string} type - Tipo de contenido ('articulo', 'noticia', 'video' o 'Artículo', 'Noticia', 'Video')
    * @returns {Object} Resultado de la operación
    */
   deleteContent: async (id, type) => {
@@ -165,6 +165,20 @@ export const contentService = {
         throw new Error('No hay token de autenticación');
       }
 
+      // Normalizar tipo a minúsculas y mapear a endpoints
+      const normalizedType = type.toLowerCase();
+      const typeMapping = {
+        'artículo': 'articulo',
+        'articulo': 'articulo', 
+        'noticia': 'noticia',
+        'video': 'video'
+      };
+
+      const mappedType = typeMapping[normalizedType];
+      if (!mappedType) {
+        throw new Error(`Tipo de contenido no válido: ${type}. Tipos válidos: Artículo, Noticia, Video`);
+      }
+
       // Mapear tipos a endpoints
       const endpoints = {
         'articulo': '/api/articulos',
@@ -172,12 +186,9 @@ export const contentService = {
         'video': '/api/videos'
       };
 
-      const endpoint = endpoints[type];
-      if (!endpoint) {
-        throw new Error(`Tipo de contenido no válido: ${type}`);
-      }
+      const endpoint = endpoints[mappedType];
 
-      console.log(`[DELETE] Eliminando ${type} ID: ${id}`);
+      console.log(`[DELETE] Eliminando ${type} (${mappedType}) ID: ${id}`);
       
       const response = await fetch(`${API_URL}${endpoint}/${id}`, {
         method: 'DELETE',
