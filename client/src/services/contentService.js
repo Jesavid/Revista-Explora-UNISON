@@ -78,8 +78,11 @@ export const contentService = {
       };
 
       // Transformar artículos del formato backend al frontend
-      const articles = rawArticles.map(a => ({
-        id: a.idarticulo,
+      const articles = rawArticles.map(a => {
+      const articleId = a.id ?? a.idarticulo; 
+
+      return {
+        id: articleId,                         
         title: a.titulo,
         autor: a.autor,
         resumen: a.resumen,
@@ -87,9 +90,12 @@ export const contentService = {
         idnumero: a.idnumero,
         idusuario: a.idusuario,
         date: formatDate(a.fecha),
-        // Generar URL del PDF basada en el ID del artículo
-        pdfUrl: a.idarticulo ? `${API_URL}/api/articulos/file/articulo-${a.idarticulo}.pdf` : null,
-      }));
+        pdfUrl: articleId
+          ? `${API_URL}/api/articulos/file/articulo-${articleId}.pdf`
+          : null,
+      };
+    });
+
 
         // Transformar videos del formato backend al frontend
         const videos = rawVideos.map(v => ({
